@@ -1,0 +1,24 @@
+<div class="flex flex-col h-screen">
+  <!-- Header -->
+  <app-header [bntLogout]="true" class="p-2 flex justify-between items-center shadow-md">
+    <button class="rounded bg-red-600 py-2 px-4 text-white shadow-md hover:bg-red-700" type="button">
+      Cerrar sesión
+    </button>
+  </app-header>
+
+  <!-- Contenido principal -->
+  <div class="flex flex-1 p-6">
+    <!-- Sidebar -->
+    <app-sidebar class="p-2 mr-8 hidden md:block"></app-sidebar>
+    <hr class="my-2 border-blue-gray-50" />
+    <!-- Contenedor principal -->
+    <div
+      class="flex-1 p-4 flex-col rounded-xl bg-clip-border text-gray-700 shadow-xl shadow-blue-gray-900/5 bg-[#FEF7FF] max-h-[700px]">
+      <p class="text-center">Contenido principal aquí</p>.
+      <div class="p-6">
+        <app-table></app-table>
+      </div>
+
+    </div>
+  </div>
+</div>
