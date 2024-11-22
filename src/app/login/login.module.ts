@@ -21,7 +21,8 @@ import { RecoverPasswordFormComponent } from './recover-password-form/recover-pa
   ],
   exports: [
     FormLoginComponent,
-    LoginPageComponent
+    LoginPageComponent,
+    RecoverPasswordModalComponent
   ]
 })
 
