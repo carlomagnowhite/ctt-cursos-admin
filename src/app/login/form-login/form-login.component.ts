@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
-import { SupabaseService } from '../../services/supabase.service';
+import { Component, inject } from '@angular/core';
+import { SupabaseService } from '../../services/supabase/supabase.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -16,6 +17,7 @@ export class FormLoginComponent {
   loading: boolean = false;
   errorMessage: boolean = false;
   message: string = "";
+  router = inject(Router);
 
   //Constructor
   constructor(private supabaseService: SupabaseService, private formBuilder: FormBuilder){
@@ -25,6 +27,8 @@ export class FormLoginComponent {
         password: ["", [Validators.required, Validators.minLength(8)]]
       }
     );
+
+
   }
 
   //START
@@ -38,6 +42,7 @@ export class FormLoginComponent {
         const data =  await this.supabaseService.authLogIn(email, password);
         if(data.session){
           localStorage.setItem('session', JSON.stringify(data.session));
+          this.router.navigate(["/dashboard"]);
           console.log(data.session);
         }
       }else{
