@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
   AuthChangeEvent,
@@ -7,27 +7,34 @@ import {
   Session,
   SupabaseClient,
   User,
-} from '@supabase/supabase-js'
+} from '@supabase/supabase-js';
 import { Router } from '@angular/router';
+import { UtilsService } from '../../utils/utils.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SupabaseService {
-
   //VAR
   private supabase: SupabaseClient;
+  private utils: UtilsService = inject(UtilsService);
 
   constructor() {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+    this.supabase = createClient(
+      environment.supabaseUrl,
+      environment.supabaseKey
+    );
     this.authStateChange();
   }
 
   async authLogIn(email: string, password: string) {
     try {
-      const {data, error} = await this.supabase.auth.signInWithPassword({email, password});
+      const { data, error } = await this.supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       if (error) {
-        throw new Error("Error: " + error);
+        throw new Error('Error: ' + error);
       }
       return data;
     } catch (error) {
@@ -35,13 +42,13 @@ export class SupabaseService {
     }
   }
 
-  async getSession():Promise<any>{
+  async getSession(): Promise<any> {
     try {
-    const {data, error} = await this.supabase.auth.getSession();
-      if(error){
+      const { data, error } = await this.supabase.auth.getSession();
+      if (error) {
         throw error;
       }
-      if(data.session){
+      if (data.session) {
         this.updateSession(data.session);
       }
       return data.session;
@@ -50,23 +57,23 @@ export class SupabaseService {
     }
   }
 
-  async authStateChange(){
+  async authStateChange() {
     try {
       this.supabase.auth.onAuthStateChange((event, session: any) => {
-        console.log("Auth event: " + event);
+        console.log('Auth event: ' + event);
         switch (event) {
-          case "INITIAL_SESSION":
+          case 'INITIAL_SESSION':
             break;
-          case "SIGNED_IN":
-            if (session){
+          case 'SIGNED_IN':
+            if (session) {
               //implementar
             }
             break;
-          case "SIGNED_OUT":
+          case 'SIGNED_OUT':
             localStorage.removeItem('session');
             break;
-          case "TOKEN_REFRESHED":
-            if(session){
+          case 'TOKEN_REFRESHED':
+            if (session) {
               this.getSession();
               break;
             }
@@ -77,31 +84,36 @@ export class SupabaseService {
     }
   }
 
-  async recoverPassword(email: string){
+  async recoverPassword(email: string) {
     try {
-      const {data, error} = await this.supabase.auth.resetPasswordForEmail(email, {redirectTo: 'http://localhost:4200/set-password'});
-      if(error){
+      const { data, error } = await this.supabase.auth.resetPasswordForEmail(
+        email,
+        { redirectTo: 'http://localhost:4200/set-password' }
+      );
+      if (error) {
         throw new Error(error.message);
       }
-      console.log("Correo enviado" + data);
+      console.log('Correo enviado' + data);
     } catch (error) {
       console.error(error);
     }
   }
 
-  private updateSession(session: Session | null): void{
+  private updateSession(session: Session | null): void {
     if (session) {
-      localStorage.setItem("session", JSON.stringify(session));
-    }else {
+      localStorage.setItem('session', JSON.stringify(session));
+    } else {
       this.signOut();
     }
   }
 
-  async updatePassword(password: string){
+  async updatePassword(password: string) {
     try {
-      const{error} = await this.supabase.auth.updateUser({password: password});
+      const { error } = await this.supabase.auth.updateUser({
+        password: password,
+      });
       if (error) throw error;
-      alert("Contraseña actualizada correctamente");
+      alert('Contraseña actualizada correctamente');
     } catch (error) {
       throw error;
     }
@@ -109,16 +121,27 @@ export class SupabaseService {
 
   async signOut(): Promise<boolean> {
     try {
-      const {error} = await this.supabase.auth.signOut();
-      if(error) throw error;
+      const { error } = await this.supabase.auth.signOut();
+      if (error) throw error;
       return true;
     } catch (error) {
       throw error;
     }
   }
 
-
-
+  async getUserProfile() {
+    try {
+      const sessionObj = this.utils.getSession();
+      const { data, error } = await this.supabase
+        .from('usuarios')
+        .select()
+        .eq('id', sessionObj.user.id);
+      if(error){
+        return error;
+      }
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
-
-
