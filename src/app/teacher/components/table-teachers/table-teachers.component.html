@@ -1,0 +1,108 @@
+<div class="p-4">
+  <!-- Input de búsqueda y botones -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 space-y-4 sm:space-y-0">
+    <input
+      type="text"
+      class="border border-gray-300 rounded-lg p-2 w-full sm:max-w-md"
+      placeholder="Puede buscar por nombre, correo"
+    />
+    <div class="flex justify-end space-x-2">
+      <button class="p-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+        <i class="material-icons">filter_alt</i>
+      </button>
+      <button (click)="openModal()" class="p-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+        <i class="material-icons">add</i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="overflow-x-auto">
+    <table class="w-full border border-gray-200 rounded-lg">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="p-2 text-left">
+            <input type="checkbox" />
+          </th>
+          <th class="p-2 text-left">Nombre</th>
+          <th class="p-2 text-left">Titulación</th>
+          <th class="p-2 text-left">Cargo</th>
+          <th class="p-2 text-left">Correo</th>
+          <th class="p-2 text-left">Estado</th>
+          <th class="p-2 text-left">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let teacher of teachers"
+          class="border-b hover:bg-gray-50"
+        >
+          <td class="p-2">
+            <input type="checkbox" />
+          </td>
+          <td class="p-2 flex items-center space-x-2">
+            <img
+              src="https://via.placeholder.com/40"
+              alt="Avatar"
+              class="w-8 h-8 rounded-full"
+            />
+            <span>{{ teacher.nombre }}</span>
+          </td>
+          <td class="p-2">{{ teacher.titulacion }}</td>
+          <td class="p-2">{{ teacher.cargo }}</td>
+          <td class="p-2">{{ teacher.correo }}</td>
+          <td
+            class="p-2"
+            [ngClass]="{
+              'text-green-600': teacher.estado === 'Activo',
+              'text-red-600': teacher.estado === 'Inactivo'
+            }"
+          >
+            {{ teacher.estado }}
+          </td>
+          <td class="p-2 flex space-x-2">
+            <button
+              class="text-blue-600 hover:text-blue-800"
+            >
+              <i class="material-icons">edit</i>
+            </button>
+            <button
+              class="text-red-600 hover:text-red-800"
+            >
+              <i class="material-icons">delete</i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <div
+    class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-4 space-y-4 sm:space-y-0"
+  >
+    <div class="flex items-center space-x-2">
+      <span>Filas por pag.</span>
+      <select
+        [(ngModel)]="rowsPerPage"
+        class="border border-gray-300 rounded-lg p-2"
+      >
+        <option *ngFor="let option of [10, 25, 50, 100]" [value]="option">
+          {{ option }}
+        </option>
+      </select>
+    </div>
+    <span class="text-center">{{ paginationText }}</span>
+    <div class="flex justify-end space-x-2">
+      <button class="p-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+        <i class="material-icons">chevron_left</i>
+      </button>
+      <button class="p-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+        <i class="material-icons">chevron_right</i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-modal-add-teacher *ngIf="showModal" (close)="closeModal()"></app-modal-add-teacher>
+
