@@ -6,6 +6,8 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { RouterOutlet } from '@angular/router';
 import { TeachersComponent } from './teachers/teachers.component';
 import { LoginModule } from '../login/login.module';
+import { TeacherModule } from '../teacher/teacher.module';
+
 
 @NgModule({
   declarations: [
@@ -18,7 +20,7 @@ import { LoginModule } from '../login/login.module';
     SharedModule,
     RouterOutlet,
     LoginModule,
-  ],
-  exports: []
+    TeacherModule
+  ]
 })
 export class HomeModule { }

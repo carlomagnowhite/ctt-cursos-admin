@@ -27,4 +27,5 @@ import { ReactiveFormsModule } from '@angular/forms';
     TableComponent
   ]
 })
+
 export class SharedModule { }
