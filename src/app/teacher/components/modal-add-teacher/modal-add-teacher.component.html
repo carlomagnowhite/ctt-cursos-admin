@@ -1,127 +1,136 @@
 <div class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
 
-  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
-    <form [formGroup]="teacherForm" (ngSubmit)="submitForm()" class="space-y-4">
-      <div class="flex justify-between items-center mb-4">
-        <!-- Cambiar el título dinámicamente -->
-        <h2 class="text-xl font-semibold text-gray-700">
-          {{ teacherForm.get('id')?.value ? 'Editar Docente' : 'Agregar Docente' }}
-        </h2>
-        <button (click)="close.emit()" class="text-gray-600 hover:text-gray-800">
-          <span class="material-icons">close</span>
-        </button>
-      </div>
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90%] flex flex-col my-4">
+    <!-- Header del Modal -->
+    <div class="flex justify-between items-center p-4 border-b">
+      <h2 class="text-xl font-semibold text-gray-700">
+        {{ teacherForm.get('id')?.value ? 'Editar Docente' : 'Agregar Docente' }}
+      </h2>
+      <button
+        (click)="close.emit()"
+        class="text-gray-600 hover:text-gray-800"
+      >
+        <span class="material-icons">close</span>
+      </button>
+    </div>
 
-      <!-- Nombre -->
-      <div>
-        <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-        <input
-          id="nombre"
-          type="text"
-          formControlName="nombre"
-          class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-          placeholder="Ingrese el nombre"
-        />
-        <p *ngIf="teacherForm.get('nombre')?.touched && teacherForm.get('nombre')?.invalid" class="text-sm text-red-600 mt-1">
-          Este campo es obligatorio.
-        </p>
-      </div>
+    <div class="p-4 overflow-y-auto flex-grow">
+      <form [formGroup]="teacherForm" (ngSubmit)="submitForm()" class="space-y-4">
 
-      <!-- Apellido -->
-      <div>
-        <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
-        <input
-          id="apellido"
-          type="text"
-          formControlName="apellido"
-          class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-          placeholder="Ingrese el apellido"
-        />
-        <p *ngIf="teacherForm.get('apellido')?.touched && teacherForm.get('apellido')?.invalid" class="text-sm text-red-600 mt-1">
-          Este campo es obligatorio.
-        </p>
-      </div>
+        <!-- Nombre -->
+        <div>
+          <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+          <input
+            id="nombre"
+            type="text"
+            formControlName="nombre"
+            class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            placeholder="Ingrese el nombre"
+          />
+          <p *ngIf="teacherForm.get('nombre')?.touched && teacherForm.get('nombre')?.invalid" class="text-sm text-red-600 mt-1">
+            Este campo es obligatorio.
+          </p>
+        </div>
 
-      <!-- Correo -->
-      <div>
-        <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
-        <input
-          id="correo"
-          type="email"
-          formControlName="correo"
-          class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-          placeholder="Ingrese el correo electrónico"
-        />
-        <p *ngIf="teacherForm.get('correo')?.touched && teacherForm.get('correo')?.invalid" class="text-sm text-red-600 mt-1">
-          Introduzca un correo válido.
-        </p>
-      </div>
+        <!-- Apellido -->
+        <div>
+          <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
+          <input
+            id="apellido"
+            type="text"
+            formControlName="apellido"
+            class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            placeholder="Ingrese el apellido"
+          />
+          <p *ngIf="teacherForm.get('apellido')?.touched && teacherForm.get('apellido')?.invalid" class="text-sm text-red-600 mt-1">
+            Este campo es obligatorio.
+          </p>
+        </div>
 
-      <!-- Título -->
-      <div>
-        <label for="titulo" class="block text-sm font-medium text-gray-700">Título</label>
-        <input
-          id="titulo"
-          type="text"
-          formControlName="titulo"
-          class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-          placeholder="Ingrese el título académico"
-        />
-        <p *ngIf="teacherForm.get('titulo')?.touched && teacherForm.get('titulo')?.invalid" class="text-sm text-red-600 mt-1">
-          Este campo es obligatorio.
-        </p>
-      </div>
+        <!-- Correo -->
+        <div>
+          <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
+          <input
+            id="correo"
+            type="email"
+            formControlName="correo"
+            class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            placeholder="Ingrese el correo electrónico"
+          />
+          <p *ngIf="teacherForm.get('correo')?.touched && teacherForm.get('correo')?.invalid" class="text-sm text-red-600 mt-1">
+            Introduzca un correo válido.
+          </p>
+        </div>
 
-      <!-- Imagen -->
-      <div>
-        <label for="img" class="block text-sm font-medium text-gray-700">Imagen</label>
-        <input
-          id="img"
-          type="file"
-          (change)="onFileSelected($event)"
-          class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-        />
-        <p *ngIf="!selectedFile && teacherForm.get('img')?.touched" class="text-sm text-red-600 mt-1">
-          Seleccione una imagen.
-        </p>
-      </div>
+        <!-- Título -->
+        <div>
+          <label for="titulo" class="block text-sm font-medium text-gray-700">Título</label>
+          <input
+            id="titulo"
+            type="text"
+            formControlName="titulo"
+            class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            placeholder="Ingrese el título académico"
+          />
+          <p *ngIf="teacherForm.get('titulo')?.touched && teacherForm.get('titulo')?.invalid" class="text-sm text-red-600 mt-1">
+            Este campo es obligatorio.
+          </p>
+        </div>
 
-      <!-- Cargo -->
-      <div>
-        <label for="cargo" class="block text-sm font-medium text-gray-700">Cargo</label>
-        <input
-          id="cargo"
-          type="text"
-          formControlName="cargo"
-          class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-          placeholder="Ingrese el cargo"
-        />
-        <p *ngIf="teacherForm.get('cargo')?.touched && teacherForm.get('cargo')?.invalid" class="text-sm text-red-600 mt-1">
-          Este campo es obligatorio.
-        </p>
-      </div>
+        <!-- Imagen -->
+        <div>
+          <label for="img" class="block text-sm font-medium text-gray-700">Imagen</label>
+          <input
+            id="img"
+            type="file"
+            (change)="onFileSelected($event)"
+            class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+          />
+          <p *ngIf="!selectedFile && teacherForm.get('img')?.touched" class="text-sm text-red-600 mt-1">
+            Seleccione una imagen.
+          </p>
+        </div>
 
-      <!-- Botón Guardar -->
-      <div class="flex justify-between mt-4">
-        <button
-          type="button"
-          (click)="close.emit()"
-          class="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:ring focus:ring-gray-200"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring focus:ring-blue-300"
-        >
-          {{ teacherForm.get('id')?.value ? 'Actualizar' : 'Guardar' }}
-        </button>
-      </div>
+        <!-- Cargo -->
+        <div>
+          <label for="cargo" class="block text-sm font-medium text-gray-700">Cargo</label>
+          <input
+            id="cargo"
+            type="text"
+            formControlName="cargo"
+            class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            placeholder="Ingrese el cargo"
+          />
+          <p *ngIf="teacherForm.get('cargo')?.touched && teacherForm.get('cargo')?.invalid" class="text-sm text-red-600 mt-1">
+            Este campo es obligatorio.
+          </p>
+        </div>
 
-      <!-- Lista de campos inválidos -->
-      <div *ngIf="teacherForm.invalid && teacherForm.touched" class="text-sm text-red-600 mt-4">
-        <strong>Por favor corrija los campos marcados en rojo.</strong>
-      </div>
-    </form>
+        <!-- Lista de campos inválidos -->
+        <div *ngIf="teacherForm.invalid && teacherForm.touched" class="text-sm text-red-600 mt-4">
+          <strong>Por favor corrija los campos marcados en rojo.</strong>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer del Modal -->
+    <div class="flex justify-between p-4 border-t">
+      <button
+        type="button"
+        (click)="close.emit()"
+        class="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:ring focus:ring-gray-200"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring focus:ring-blue-300"
+        [disabled]="teacherForm.invalid"
+        (click)="submitForm()"
+      >
+        {{ teacherForm.get('id')?.value ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+
   </div>
 </div>
