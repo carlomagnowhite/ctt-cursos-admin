@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeacherService } from '../../services/teacher.service';
 import { async } from 'rxjs';
@@ -11,7 +11,9 @@ import { async } from 'rxjs';
 export class ModalAddTeacherComponent {
   teacherForm: FormGroup;
 
-  @Output() close = new EventEmitter<void>();
+  @Input() teacherData: any = null; // Datos del docente a editar
+  @Output() close = new EventEmitter<void>(); // Para cerrar el modal
+  @Output() refreshTable = new EventEmitter<void>(); // Para recargar la tabla
 
   teacher = {
     nombre: '',
@@ -26,6 +28,7 @@ export class ModalAddTeacherComponent {
 
   constructor(private fb: FormBuilder, private teacherService: TeacherService) {
     this.teacherForm = this.fb.group({
+      id: [null],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
@@ -33,6 +36,13 @@ export class ModalAddTeacherComponent {
       cargo: ['', Validators.required],
       img: [null],
     });
+  }
+
+  ngOnChanges(): void {
+    console.log('Datos cargados en el modal:', this.teacherData);
+    if (this.teacherData) {
+      this.teacherForm.patchValue(this.teacherData); // Precargar datos en el formulario
+    }
   }
 
   onFileSelected(event: any): void {
@@ -45,66 +55,37 @@ export class ModalAddTeacherComponent {
     }
   }
 
-  async onSubmit() {
-    if (this.selectedFile) {
-      // Subir imagen a Supabase Storage
-      const imageUrl = await this.teacherService.uploadImage(this.selectedFile);
-      if (imageUrl) {
-        this.teacher.img = imageUrl; // Asignar la URL de la imagen al objeto teacher
-      }
-    }
-
-    // Guardar los datos del profesor en la base de datos
-    await this.teacherService.addTeacher(this.teacher);
-  }
-
   async submitForm(): Promise<void> {
     if (this.teacherForm.valid) {
       try {
+        const formData = this.teacherForm.value;
+
+        // Subir la imagen si existe
         if (this.selectedFile) {
           const imageUrl = await this.teacherService.uploadImage(this.selectedFile);
           if (imageUrl) {
-            this.teacher.img = imageUrl;
+            formData.img = imageUrl;
           }
         }
-        const formData = this.teacherForm.value;
-        formData.img = this.teacher.img; // Agregar URL de imagen al formulario
-        await this.teacherService.addTeacher(formData);
 
-        alert('Profesor agregado exitosamente');
-        this.teacherForm.reset();
-        this.selectedFile = null;
+        // Verifica si es agregar o actualizar
+        if (formData.id) {
+          await this.teacherService.updateTeacher(formData.id, formData);
+          alert('Docente actualizado exitosamente.');
+        } else {
+          delete formData.id; // No enviar `id` en la creación
+          await this.teacherService.addTeacher(formData);
+          alert('Docente agregado exitosamente.');
+        }
+
+        this.refreshTable.emit();
         this.close.emit();
       } catch (error) {
-        console.error('Error al agregar el profesor:', error);
-        alert('Hubo un error al agregar el profesor.');
+        console.error('Error al guardar el docente:', error);
+        alert('Hubo un error al guardar el docente.');
       }
     } else {
-      // Detectamos los campos inválidos y mostramos un mensaje
-      const invalidFields = Object.keys(this.teacherForm.controls).filter(
-        (field) => this.teacherForm.get(field)?.invalid
-      );
-
-      const fieldNames = invalidFields.map((field) => {
-        switch (field) {
-          case 'nombre':
-            return 'Nombre';
-          case 'apellido':
-            return 'Apellido';
-          case 'correo':
-            return 'Correo';
-          case 'titulo':
-            return 'Título';
-          case 'img':
-            return 'Imagen';
-          case 'cargo':
-            return 'Cargo';
-          default:
-            return field;
-        }
-      });
-
-      alert(`Por favor complete los siguientes campos: ${fieldNames.join(', ')}`);
+      alert('Por favor complete todos los campos correctamente.');
     }
   }
 

@@ -79,4 +79,21 @@ export class TeacherService {
       console.error('Error deleting teacher:', error);
     }
   }
+
+  async deleteTeachers(ids: string[]): Promise<void> {
+    try {
+      const { error } = await this.supabase
+        .from('docentes')
+        .delete()
+        .in('id', ids); // Usamos el operador `in` para eliminar múltiples registros
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error eliminando profesores:', error);
+      throw error;
+    }
+  }
+
+
+
 }

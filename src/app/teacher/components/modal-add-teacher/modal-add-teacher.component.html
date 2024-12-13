@@ -1,8 +1,16 @@
 <div class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+
   <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
     <form [formGroup]="teacherForm" (ngSubmit)="submitForm()" class="space-y-4">
-      <!-- Título -->
-      <h2 class="text-xl font-semibold text-gray-700">Agregar Profesor</h2>
+      <div class="flex justify-between items-center mb-4">
+        <!-- Cambiar el título dinámicamente -->
+        <h2 class="text-xl font-semibold text-gray-700">
+          {{ teacherForm.get('id')?.value ? 'Editar Docente' : 'Agregar Docente' }}
+        </h2>
+        <button (click)="close.emit()" class="text-gray-600 hover:text-gray-800">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
 
       <!-- Nombre -->
       <div>
@@ -94,12 +102,21 @@
       </div>
 
       <!-- Botón Guardar -->
-      <button
-        type="submit"
-        class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 focus:ring focus:ring-blue-300"
-      >
-        Guardar
-      </button>
+      <div class="flex justify-between mt-4">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:ring focus:ring-gray-200"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring focus:ring-blue-300"
+        >
+          {{ teacherForm.get('id')?.value ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
 
       <!-- Lista de campos inválidos -->
       <div *ngIf="teacherForm.invalid && teacherForm.touched" class="text-sm text-red-600 mt-4">
