@@ -49,9 +49,8 @@ export class TeacherService {
     const { data, error } = await this.supabase.from('docentes').select('*');
     if (error) {
       console.error('Error fetching docentes:', error);
-      return [];
     }
-    return data;
+    return data as [];
   }
 
   async addTeacher(teacher: any) {
@@ -92,6 +91,16 @@ export class TeacherService {
       console.error('Error eliminando profesores:', error);
       throw error;
     }
+  }
+
+  async getTeachersCount() : Promise<number> {
+    const { count, error } = await this.supabase
+      .from("docentes")
+      .select("*", { count: 'exact' });
+
+    if (error) throw error.message;
+
+    return Number(count);
   }
 
 

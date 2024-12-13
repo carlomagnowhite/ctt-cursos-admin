@@ -12,6 +12,8 @@ export class TableComponent {
   cursos: any [] = [];
   cursosService: CoursesService = inject(CoursesService);
   isModalOpen: boolean = false;
+  isModalUpdateOpen: boolean = false;
+  courseData: any = null;
 
   constructor(){
     this.getCourses();
@@ -23,6 +25,19 @@ export class TableComponent {
 
   closeModal(): void {
     this.isModalOpen = false;
+    this.getCourses();
+  }
+
+  openUpdateModal(curso: Curso): void{
+    console.log('Curso seleccionado:', curso);
+    this.courseData = curso;
+    this.isModalUpdateOpen = true;
+  }
+
+  closeUpdateModal(): void{
+    this.isModalUpdateOpen = false;
+    this.courseData = null;
+    this.getCourses();
   }
 
   async getCourses(){
@@ -45,10 +60,6 @@ export class TableComponent {
     } catch (error) {
       throw error;
     }
-  }
-
-  async updateCourse(curso: Curso){
-    
   }
 
 }

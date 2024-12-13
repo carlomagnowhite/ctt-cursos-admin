@@ -35,7 +35,6 @@
           <th class="p-2 text-left">Titulación</th>
           <th class="p-2 text-left">Cargo</th>
           <th class="p-2 text-left">Correo</th>
-          <th class="p-2 text-left">Estado</th>
           <th class="p-2 text-left">Acciones</th>
         </tr>
       </thead>
@@ -58,15 +57,6 @@
           <td class="p-2">{{ teacher.titulo }}</td>
           <td class="p-2">{{ teacher.cargo }}</td>
           <td class="p-2">{{ teacher.correo }}</td>
-          <td
-            class="p-2"
-            [ngClass]="{
-              'text-green-600': teacher.estado === 'Activo',
-              'text-red-600': teacher.estado === 'Inactivo'
-            }"
-          >
-            {{ teacher.estado }}
-          </td>
           <td class="p-2 flex space-x-2">
             <button class="select-none rounded-lg border-gray-900 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-gray-900 transition-all hover:opacity-75 focus:ring focus:ring-gray-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" (click)="openEditModal(teacher)">
               <i class="fas fa-pencil-alt"></i>

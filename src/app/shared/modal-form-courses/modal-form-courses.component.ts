@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { CoursesService } from '../../services/Courses/courses.service';
 import { Curso } from '../../interfaces/cursos.interface';
+import { TeacherService } from '../../teacher/services/teacher.service';
 
 @Component({
   selector: 'app-modal-form-courses',
@@ -19,18 +20,30 @@ export class ModalFormCoursesComponent {
   formCurso: FormGroup;
   loading: boolean = false;
   @Output() isModalOpenChange: EventEmitter<boolean> = new EventEmitter();
+  @Input() courseData: any = null;
   submitted: boolean = false;
   cursosService: CoursesService = inject(CoursesService);
+  teachersService: TeacherService = inject(TeacherService);
+  teachers: any [] = [];
 
   constructor(private formBuilder: FormBuilder) {
     this.formCurso = this.formBuilder.group(
       {
+        id: [''],
         nombre: ['', [Validators.required, Validators.minLength(10)]],
         ubicacion: ['', [Validators.required, Validators.minLength(10)]],
         img: [''],
         descripcion: ['', [Validators.required, Validators.minLength(40)]],
         objetivo: ['', [Validators.required, Validators.minLength(30)]],
-        horario: ['', [Validators.required, Validators.pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9] - (0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)]],
+        horario: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(
+              /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9] - (0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/
+            ),
+          ],
+        ],
         id_docente_responsable: ['', [Validators.required]],
         modalidad: ['', [Validators.required]],
         cant_horas: ['', [Validators.required]],
@@ -59,6 +72,18 @@ export class ModalFormCoursesComponent {
         ],
       }
     );
+
+    this.getTeachers();
+  }
+
+  async getTeachers(){
+    try {
+      const response = await this.teachersService.getTeachers();
+      this.teachers = response;
+      console.log(this.teachers);
+    } catch (error) {
+      throw error;
+    }
   }
 
   closeModal() {
@@ -89,25 +114,35 @@ export class ModalFormCoursesComponent {
   }
 
   async onSubmit() {
+    const form = this.formCurso.value;
     this.submitted = true;
     try {
       if (this.formCurso.valid) {
-        this.loading = true;
-        const response = await this.cursosService.addCourse(this.prepareObject());
-        console.log("respuesta " + response);
-        this.closeModal();
+        if (form.id) {
+          this.updateCourse();
+        } else {
+          this.loading = true;
+          const response = await this.cursosService.addCourse(
+            this.prepareObject()
+          );
+          console.log('respuesta ' + response);
+          this.closeModal();
+        }
       } else {
-        throw new Error("Ha ocurrido un error con el formulario. " + this.formCurso.errors);
+        throw new Error(
+          'Ha ocurrido un error con el formulario. ' + this.formCurso.errors
+        );
       }
     } catch (error) {
       throw error;
     } finally {
-      this.loading = false
+      this.loading = false;
     }
   }
 
   prepareObject(): Curso {
     const nuevoCurso: Curso = {
+      id: this.formCurso.value.id,
       nombre: this.formCurso.value.nombre,
       ubicacion: this.formCurso.value.ubicacion,
       img: this.formCurso.value.img,
@@ -124,5 +159,23 @@ export class ModalFormCoursesComponent {
       fin_curso: this.formCurso.value.fin_curso,
     };
     return nuevoCurso;
+  }
+
+  async updateCourse() {
+    this.submitted = true;
+    try {
+      if (this.formCurso.valid) {
+        this.loading = true;
+        const response = await this.cursosService.updateCourse(
+          this.prepareObject()
+        );
+        console.log('Curso actualizado: ' + response);
+        this.closeModal();
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      this.loading = false;
+    }
   }
 }

@@ -85,7 +85,7 @@ export class CoursesService {
             objetivo: curso.objetivo,
             horario: curso.horario,
             id_docente_responsable: curso.id_docente_responsable,
-            
+
           }
         )
         .eq('id', curso.id);
@@ -94,5 +94,14 @@ export class CoursesService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getCoursesCount() : Promise<number> {
+    const { count, error } = await this.supabase
+      .from("cursos")
+      .select("*", { count: 'exact' });
+    if (error) throw error.message;
+
+    return Number(count);
   }
 }

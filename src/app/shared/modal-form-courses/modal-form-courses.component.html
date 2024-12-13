@@ -4,10 +4,14 @@
     <form (ngSubmit)="onSubmit()" [formGroup]="formCurso">
       <!-- Contenedor principal en dos columnas -->
       <div class="grid grid-cols-2 gap-4 mb-4">
+        <div *ngIf="courseData?.id">
+          <label for="id" class="block text-sm font-medium text-gray-700">ID del curso:</label>
+          <input type="text" id="id" formControlName="id" [(ngModel)]="courseData.id" [readonly]="true" />
+        </div>
         <!-- Campo: Nombre del curso -->
         <div>
           <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre del curso:</label>
-          <input type="text" id="nombre" formControlName="nombre"
+          <input type="text" id="nombre" formControlName="nombre" [ngModel]="courseData?.nombre"
             class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
           <div *ngIf="formCurso.controls['nombre'].invalid && submitted" class="text-red-500 text-sm">
             Ingrese un nombre de curso válido.
@@ -17,7 +21,7 @@
         <!-- Campo: Ubicación -->
         <div>
           <label for="ubicacion" class="block text-sm font-medium text-gray-700">Ubicación:</label>
-          <input id="ubicacion" formControlName="ubicacion"
+          <input id="ubicacion" formControlName="ubicacion" [ngModel]="courseData?.ubicacion"
             class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
           <div *ngIf="formCurso.controls['ubicacion'].invalid && submitted" class="text-red-500 text-sm">
             Ingrese una ubicación válida.
@@ -34,7 +38,7 @@
         <!-- Campo: Horario -->
         <div>
           <label for="horario" class="block text-sm font-medium text-gray-700">Horario:</label>
-          <input id="horario" formControlName="horario"
+          <input id="horario" formControlName="horario" [ngModel]="courseData?.horario"
             class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             placeholder="HH:MM - HH:MM" />
           <div *ngIf="formCurso.controls['horario'].invalid && submitted" class="text-red-500 text-sm">
@@ -45,11 +49,10 @@
         <!-- Campo: Ponente -->
         <div>
           <label for="id_docente_responsable" class="block text-sm font-medium text-gray-700">Ponente:</label>
-          <select id="id_docente_responsable" formControlName="id_docente_responsable"
+          <select id="id_docente_responsable" formControlName="id_docente_responsable" [ngModel]="courseData?.id_docente_responsable"
             class="w-full bg-white border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
             <option value="">Seleccionar...</option>
-            <option value="fa7e552a-0fc4-4502-a8fd-bf2936a1af65">Mateo Díaz</option>
-            <option value="2">Ponente 2</option>
+            <option *ngFor="let teacher of teachers" [value]="teacher?.id">{{teacher.nombre + ' ' +teacher.apellido}}</option>
           </select>
           <div *ngIf="formCurso.controls['id_docente_responsable'].invalid && submitted" class="text-red-500 text-sm">
             Seleccione un docente.
@@ -59,7 +62,7 @@
         <!-- Campo: Modalidad -->
         <div>
           <label for="modalidad" class="block text-sm font-medium text-gray-700">Modalidad:</label>
-          <select id="modalidad" formControlName="modalidad"
+          <select id="modalidad" formControlName="modalidad" [ngModel]="courseData?.modalidad"
             class="w-full bg-white border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
             <option value="">Seleccionar...</option>
             <option value="presencial">Presencial</option>
@@ -73,7 +76,7 @@
         <!-- Campo: Cantidad Horas -->
         <div>
           <label for="cant_horas" class="block text-sm font-medium text-gray-700">Cantidad Horas:</label>
-          <input id="cant_horas" formControlName="cant_horas" type="number"
+          <input id="cant_horas" formControlName="cant_horas" type="number" [ngModel]="courseData?.cant_horas"
             class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
           <div *ngIf="formCurso.controls['cant_horas'].invalid && submitted" class="text-red-500 text-sm">
             Ingrese una cantidad válida.
@@ -83,7 +86,7 @@
         <!-- Campo: Precios -->
         <div>
           <label for="precio" class="block text-sm font-medium text-gray-700">Precios:</label>
-          <input id="precio" formControlName="precio" type="number"
+          <input id="precio" formControlName="precio" type="number" [ngModel]="courseData?.precio"
             class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
           <div *ngIf="formCurso.controls['precio'].invalid && submitted" class="text-red-500 text-sm">
             Ingrese una cantidad válida.
@@ -92,7 +95,7 @@
         <!-- Campo: Objetivo -->
         <div>
           <label for="objetivo" class="block text-sm font-medium text-gray-700">Objetivo:</label>
-          <textarea id="objetivo" formControlName="objetivo"
+          <textarea id="objetivo" formControlName="objetivo" [ngModel]="courseData?.objetivo"
             class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
           <div *ngIf="formCurso.controls['objetivo'].invalid && submitted" class="text-red-500 text-sm">
             Ingrese información válida.
@@ -102,7 +105,7 @@
         <!-- Campo: Descripcion -->
         <div>
           <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripcion del curso</label>
-          <textarea id="descripcion" formControlName="descripcion"
+          <textarea id="descripcion" formControlName="descripcion" [ngModel]="courseData?.descripcion"
             class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
           <div *ngIf="formCurso.controls['descripcion'].invalid && submitted" class="text-red-500 text-sm">
             Descripción muy corta.
@@ -114,12 +117,12 @@
           <div>
             <label for="inicio_inscripciones" class="block text-sm font-medium text-gray-700">Inicio
               inscripciones:</label>
-            <input type="date" id="inicio_inscripciones" formControlName="inicio_inscripciones"
+            <input type="date" id="inicio_inscripciones" formControlName="inicio_inscripciones" [ngModel]="courseData?.inicio_inscripciones"
               class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
           </div>
           <div>
             <label for="fin_inscripciones" class="block text-sm font-medium text-gray-700">Fin inscripciones:</label>
-            <input type="date" id="fin_inscripciones" formControlName="fin_inscripciones"
+            <input type="date" id="fin_inscripciones" formControlName="fin_inscripciones" [ngModel]="courseData?.fin_inscripciones"
               class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
           </div>
           <div *ngIf="formCurso.errors?.['invalidDateRange'] && submitted" class="text-red-500 text-sm">
@@ -131,13 +134,13 @@
         <div>
           <div>
             <label for="inicio_curso" class="block text-sm font-medium text-gray-700">Inicio curso:</label>
-            <input type="date" id="inicio_curso" formControlName="inicio_curso"
+            <input type="date" id="inicio_curso" formControlName="inicio_curso" [ngModel]="courseData?.inicio_curso"
               class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
           </div>
 
           <div>
             <label for="fin_curso" class="block text-sm font-medium text-gray-700">Fin curso:</label>
-            <input type="date" id="fin_curso" formControlName="fin_curso"
+            <input type="date" id="fin_curso" formControlName="fin_curso" [ngModel]="courseData?.fin_curso"
               class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
           </div>
           <div *ngIf="formCurso.errors?.['invalidDateRange'] && submitted" class="text-red-500 text-sm">
