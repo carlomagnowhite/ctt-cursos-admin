@@ -1,0 +1,28 @@
+<div class="flex justify-center items-center w-full">
+  <!-- COMPONENT CODE -->
+  <section class="w-full bg-[#D9D9D9]">
+    <div class="container px-4 mx-auto py-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
+        <!-- Imagen del logo -->
+        <div class="flex justify-center lg:justify-start">
+          <img class="w-40 h-auto md:w-60 lg:w-80" src="../../../assets/img/logo.png" alt="Logo">
+        </div>
+        <!-- Botón de Cerrar sesión -->
+        <div *ngIf="bntLogout" class="flex justify-center lg:justify-end">
+          <button
+            (click)="logout()"
+            class="rounded-md bg-red-600 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-red-700 focus:shadow-none active:bg-red-700 hover:bg-red-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
+            Cerrar sesión
+          </button>
+        </div>
+        <div>
+          <p *ngIf="error">
+            Error al cerrar sesión
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- COMPONENT CODE -->
+</div>
+
