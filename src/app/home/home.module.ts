@@ -7,18 +7,18 @@ import { RouterOutlet } from '@angular/router';
 import { TeachersComponent } from './teachers/teachers.component';
 import { LoginModule } from '../login/login.module';
 
-
 @NgModule({
   declarations: [
     DashboardComponent,
     UserProfileComponent,
-    TeachersComponent,
+    TeachersComponent
   ],
   imports: [
     CommonModule,
     SharedModule,
     RouterOutlet,
-    LoginModule
-  ]
+    LoginModule,
+  ],
+  exports: []
 })
 export class HomeModule { }

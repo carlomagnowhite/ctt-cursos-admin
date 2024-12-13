@@ -8,7 +8,6 @@ import {
   SupabaseClient,
   User,
 } from '@supabase/supabase-js';
-import { Router } from '@angular/router';
 import { UtilsService } from '../../utils/utils.service';
 
 @Injectable({
