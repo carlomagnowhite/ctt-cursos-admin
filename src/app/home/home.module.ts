@@ -13,7 +13,7 @@ import { TeacherModule } from '../teacher/teacher.module';
   declarations: [
     DashboardComponent,
     UserProfileComponent,
-    TeachersComponent,
+    TeachersComponent
   ],
   imports: [
     CommonModule,
