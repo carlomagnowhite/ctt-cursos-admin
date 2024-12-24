@@ -76,7 +76,7 @@
     <div class="flex items-center space-x-2">
       <span>Filas por página:</span>
       <select [(ngModel)]="rowsPerPage" (change)="changeRowsPerPage()" class="border border-gray-300 rounded-lg p-2">
-        <option *ngFor="let option of [10, 20, 30, 50]" [value]="option">{{ option }}</option>
+        <option *ngFor="let option of [5, 10, 20, 30]" [value]="option">{{ option }}</option>
       </select>
     </div>
 

@@ -17,7 +17,7 @@ export class TableTeachersComponent {
   selectedCount: number = 0; // Cantidad de elementos seleccionados para eliminar
   selectedIds: string[] = []; // IDs de los elementos seleccionados
   currentPage: number = 1; // Página actual
-  rowsPerPage: number = 10; // Filas visibles por página (configurable)
+  rowsPerPage: number = 5; // Filas visibles por página (configurable)
   paginatedTeachers: any[] = []; // Lista de profesores visible en la página actual
   Math = Math;
 

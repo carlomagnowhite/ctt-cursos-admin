@@ -122,8 +122,9 @@ export class ModalFormCoursesComponent {
           this.updateCourse();
         } else {
           this.loading = true;
+          console.log(this.prepareObjectPost());
           const response = await this.cursosService.addCourse(
-            this.prepareObject()
+            this.prepareObjectPost()
           );
           console.log('respuesta ' + response);
           this.closeModal();
@@ -140,9 +141,29 @@ export class ModalFormCoursesComponent {
     }
   }
 
-  prepareObject(): Curso {
+  prepareObjectUpdate(): Curso {
     const nuevoCurso: Curso = {
       id: this.formCurso.value.id,
+      nombre: this.formCurso.value.nombre,
+      ubicacion: this.formCurso.value.ubicacion,
+      img: this.formCurso.value.img,
+      descripcion: this.formCurso.value.descripcion,
+      objetivo: this.formCurso.value.objetivo,
+      horario: this.formCurso.value.horario,
+      id_docente_responsable: this.formCurso.value.id_docente_responsable,
+      modalidad: this.formCurso.value.modalidad,
+      cant_horas: Number(this.formCurso.value.cant_horas), // Asegúrate de convertir a número
+      precio: Number(this.formCurso.value.precio), // Asegúrate de convertir a número
+      inicio_inscripciones: this.formCurso.value.inicio_inscripciones,
+      fin_inscripciones: this.formCurso.value.fin_inscripciones,
+      inicio_curso: this.formCurso.value.inicio_curso,
+      fin_curso: this.formCurso.value.fin_curso,
+    };
+    return nuevoCurso;
+  }
+
+  prepareObjectPost(): Curso {
+    const nuevoCurso: Curso = {
       nombre: this.formCurso.value.nombre,
       ubicacion: this.formCurso.value.ubicacion,
       img: this.formCurso.value.img,
@@ -167,7 +188,7 @@ export class ModalFormCoursesComponent {
       if (this.formCurso.valid) {
         this.loading = true;
         const response = await this.cursosService.updateCourse(
-          this.prepareObject()
+          this.prepareObjectUpdate()
         );
         console.log('Curso actualizado: ' + response);
         this.closeModal();

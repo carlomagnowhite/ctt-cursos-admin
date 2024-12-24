@@ -21,7 +21,7 @@ export class CoursesService {
     try {
       const { data, error } = await this.supabase.from('cursos').insert(curso);
       if (error) {
-        throw new Error('Error al intentar insertar el curso. Error: ' + error);
+        throw new Error('Error al intentar insertar el curso. Error: ' + error.message);
       }
       console.log('curso: ' + data);
       return true;
