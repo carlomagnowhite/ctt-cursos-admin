@@ -15,6 +15,7 @@
           "options": {
             "outputPath": "dist/ctt-cursos-admin",
             "index": "src/index.html",
+            "baseHref": "/",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
