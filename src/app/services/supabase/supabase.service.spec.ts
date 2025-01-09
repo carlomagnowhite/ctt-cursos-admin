@@ -10,7 +10,7 @@ describe('SupabaseService', () => {
     service = TestBed.inject(SupabaseService);
   });
 
-  it('should be created', () => {
+  it('Instanciación correcta del servicio de Supabase.', () => {
     expect(service).toBeTruthy();
   });
 });

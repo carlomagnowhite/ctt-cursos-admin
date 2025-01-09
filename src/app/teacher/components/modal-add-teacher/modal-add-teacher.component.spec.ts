@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ModalAddTeacherComponent } from './modal-add-teacher.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('ModalAddTeacherComponent', () => {
   let component: ModalAddTeacherComponent;
@@ -8,16 +9,17 @@ describe('ModalAddTeacherComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ModalAddTeacherComponent]
+      declarations: [ModalAddTeacherComponent],
+      imports: [ReactiveFormsModule]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(ModalAddTeacherComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('Creación del componente', () => {
     expect(component).toBeTruthy();
   });
 });
