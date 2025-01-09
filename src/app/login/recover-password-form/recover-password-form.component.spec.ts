@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RecoverPasswordFormComponent } from './recover-password-form.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('RecoverPasswordFormComponent', () => {
   let component: RecoverPasswordFormComponent;
@@ -8,16 +9,17 @@ describe('RecoverPasswordFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [RecoverPasswordFormComponent]
+      declarations: [RecoverPasswordFormComponent],
+      imports: [ReactiveFormsModule]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(RecoverPasswordFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('Creación del componente', () => {
     expect(component).toBeTruthy();
   });
 });

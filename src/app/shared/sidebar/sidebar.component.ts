@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TeacherService } from '../../teacher/services/teacher.service';
-import { CourseService } from '../../course/services/course.service';
 import { CoursesService } from '../../services/Courses/courses.service';
 
 @Component({

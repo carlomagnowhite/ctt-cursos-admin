@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TableTeachersComponent } from './table-teachers.component';
+import { TeachersComponent } from '../../../home/teachers/teachers.component';
+import { ModalAddTeacherComponent } from '../modal-add-teacher/modal-add-teacher.component';
+import { TeacherModule } from '../../teacher.module';
 
 describe('TableTeachersComponent', () => {
   let component: TableTeachersComponent;
@@ -8,16 +11,17 @@ describe('TableTeachersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TableTeachersComponent]
+      declarations: [TableTeachersComponent, ModalAddTeacherComponent],
+      imports: [TeacherModule]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(TableTeachersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('Creación del componente.', () => {
     expect(component).toBeTruthy();
   });
 });
