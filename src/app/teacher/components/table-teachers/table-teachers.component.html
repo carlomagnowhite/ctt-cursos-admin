@@ -34,7 +34,6 @@
         (click)="processFile()"
       >
         <i class="material-icons mr-2">login</i>
-        <span>Ingresar</span>
       </button>
     </div>
 
@@ -71,7 +70,8 @@
           class="border-b hover:bg-gray-50"
         >
           <td class="p-2">
-            <input type="checkbox" [(ngModel)]="teachers[i].selected" />
+            <input type="checkbox" [(ngModel)]="teacher.selected" (change)="updateSelectedCount()" />
+
           </td>
           <td class="p-2 flex items-center space-x-2">
             <img
@@ -152,9 +152,9 @@
   *ngIf="showMessage"
   class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50"
 >
-  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md max-h-96 overflow-y-auto">
     <h2 class="text-lg font-semibold text-gray-700">Advertencia</h2>
-    <p class="mt-4 text-gray-600">{{ modalMessage }}</p>
+    <p class="mt-4 text-gray-600 whitespace-pre-line">{{ modalMessage }}</p>
     <div class="mt-6 flex justify-end">
       <button
         class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring focus:ring-blue-300"
@@ -165,6 +165,7 @@
     </div>
   </div>
 </div>
+
 
 <app-modal-add-teacher *ngIf="showModal" [teacherData]="selectedTeacher" (close)="closeModal()" (refreshTable)="fetchTeachers()"></app-modal-add-teacher>
 

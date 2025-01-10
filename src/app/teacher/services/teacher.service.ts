@@ -102,6 +102,20 @@ export class TeacherService {
     }
   }
 
+  async getAssignedCourses(teacherId: number): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from('cursos') // Asegúrate de que este es el nombre exacto de la tabla
+      .select('nombre') // Seleccionar solo el nombre del curso
+      .eq('id_docente_responsable', teacherId); // Filtrar por ID del docente
+
+    if (error) {
+      console.error('Error al consultar cursos asignados:', error.message);
+      return [];
+    }
+
+    return data || []; // Retorna la lista de cursos o un array vacío
+  }
+
   async getTeachersCount() : Promise<number> {
     const { count, error } = await this.supabase
       .from("docentes")

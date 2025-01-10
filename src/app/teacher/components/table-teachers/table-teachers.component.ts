@@ -41,6 +41,19 @@ export class TableTeachersComponent {
     this.fetchTeachers();
   }
 
+  async checkTeacherAssignment(teacherId: number): Promise<string[] | null> {
+    const assignedCourses = await this.teacherService.getAssignedCourses(teacherId);
+
+    if (assignedCourses.length > 0) {
+      return assignedCourses.map(course => course.nombre); // Devuelve los nombres de los cursos
+    }
+
+    return null; // No hay asignaciones
+  }
+
+
+
+
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -208,6 +221,8 @@ export class TableTeachersComponent {
     }
   }
 
+
+
   filterTeachers(): void {
     const term = this.searchTerm.toLowerCase();
     this.teachers = this.allTeachers.filter(teacher =>
@@ -221,14 +236,35 @@ export class TableTeachersComponent {
     this.updatePaginatedTeachers();
   }
 
-  deleteTeacher(id: number): Promise<void> {
-    if (confirm('¿Está seguro de que desea eliminar este docente?')) {
-      return this.teacherService.deleteTeacher(id).then(() => {
-        alert('Docente eliminado exitosamente.');
-        return this.fetchTeachers(); // Recargar la tabla
-      });
+  async deleteTeacher(id: number): Promise<void> {
+    const teacher = this.teachers.find(t => t.id === id);
+    if (!teacher) return;
+
+    const assignedCourses = await this.checkTeacherAssignment(id);
+
+    if (assignedCourses && assignedCourses.length > 0) {
+      const courseList = assignedCourses.join(', ');
+      this.showModalMessage(
+        `${teacher.nombre}  ${teacher.apellido} está asignado a los siguientes cursos: ${courseList}. Por tanto, no puede ser eliminado.`
+      );
+      return; // Detener el proceso si hay asignaciones
     }
-    return Promise.resolve(); // Si no se confirma, devolvemos una promesa resuelta
+
+    // Proceder con la eliminación si no hay asignaciones
+    if (confirm(`¿Está seguro de que desea eliminar a ${teacher.nombre}?`)) {
+      try {
+        await this.teacherService.deleteTeacher(id);
+        alert('Docente eliminado exitosamente.');
+        this.fetchTeachers(); // Recargar la tabla
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error('Error al eliminar docente:', error.message);
+        } else {
+          console.error('Error al eliminar docente:', error);
+        }
+        alert('Hubo un error al eliminar el docente.');
+      }
+    }
   }
 
   get paginationText(): string {
@@ -238,31 +274,75 @@ export class TableTeachersComponent {
   }
 
   toggleSelectAll(): void {
-    this.paginatedTeachers.forEach(teacher => (teacher.selected = this.selectAll));
+    const startIndex = (this.currentPage - 1) * this.rowsPerPage;
+    const endIndex = startIndex + this.rowsPerPage;
+
+    this.teachers.slice(startIndex, endIndex).forEach(teacher => {
+      teacher.selected = this.selectAll;
+    });
+
+    this.updateSelectedCount();
   }
+
+  updateSelectedCount(): void {
+    const startIndex = (this.currentPage - 1) * this.rowsPerPage;
+    const endIndex = startIndex + this.rowsPerPage;
+
+    this.selectedCount = this.teachers.slice(startIndex, endIndex).filter(teacher => teacher.selected).length;
+  }
+
+
 
   async confirmDelete(): Promise<void> {
-    try {
-      // Llama al método de eliminación múltiple
-      await this.teacherService.deleteTeachers(this.selectedIds);
+    const selectedTeachers = this.teachers.filter(teacher => teacher.selected);
+    if (selectedTeachers.length === 0) {
+      alert('Seleccione al menos un docente para eliminar.');
+      return;
+    }
 
-      // Filtra las filas eliminadas de la tabla y del almacenamiento local
-      this.teachers = this.teachers.filter(teacher => !this.selectedIds.includes(teacher.id));
-      this.allTeachers = this.allTeachers.filter(teacher => !this.selectedIds.includes(teacher.id));
+    const assignedTeachers: { teacher: any; courses: string[] }[] = [];
+    const unassignedTeacherIds: string[] = [];
 
-      // Resetea las variables y cierra el modal
-      this.selectedIds = [];
-      this.selectedCount = 0;
-      this.selectAll = false;
-      this.showConfirmDeleteModal = false;
+    for (const teacher of selectedTeachers) {
+      const assignedCourses = await this.checkTeacherAssignment(teacher.id);
+      if (assignedCourses && assignedCourses.length > 0) {
+        assignedTeachers.push({ teacher, courses: assignedCourses });
+      } else {
+        unassignedTeacherIds.push(teacher.id);
+      }
+    }
 
-      alert('Elementos eliminados correctamente.');
-      this.fetchTeachers(); // Recargar la tabla
-    } catch (error) {
-      console.error('Error al eliminar los elementos:', error);
-      alert('Hubo un error al intentar eliminar los elementos seleccionados.');
+    // Proceder con la eliminación de los docentes no asignados
+    if (unassignedTeacherIds.length > 0) {
+      if (confirm(`¿Está seguro de que desea eliminar ${unassignedTeacherIds.length} docentes?`)) {
+        try {
+          await this.teacherService.deleteTeachers(unassignedTeacherIds);
+          alert('Docentes eliminados exitosamente.');
+          this.fetchTeachers(); // Recargar la tabla
+          this.selectAll = false; // Deseleccionar el checkbox general
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error('Error al eliminar docentes:', error.message);
+          } else {
+            console.error('Error al eliminar docentes:', error);
+          }
+          alert('Hubo un error al eliminar los docentes.');
+        }
+      }
+    }
+
+    // Mostrar mensaje de validación para los docentes asignados
+    if (assignedTeachers.length > 0) {
+      const assignedMessages = assignedTeachers.map(({ teacher, courses }) =>
+        `${teacher.nombre}:\nAsignado a los siguientes cursos:\n- ${courses.join('\n- ')}`
+      ).join('\n\n-------------------------\n\n');
+
+      this.showModalMessage(`Los siguientes docentes no pueden ser eliminados:\n\n${assignedMessages}`);
     }
   }
+
+
+
 
   updatePaginatedTeachers(): void {
     const startIndex = (this.currentPage - 1) * this.rowsPerPage;
@@ -271,10 +351,14 @@ export class TableTeachersComponent {
   }
 
   changePage(newPage: number): void {
-    if (newPage < 1 || newPage > this.totalPages) return; // Limitar el rango de las páginas
+    if (newPage < 1 || newPage > this.totalPages) return;
+
     this.currentPage = newPage;
-    this.updatePaginatedTeachers(); // Actualizar los datos de la nueva página
+    this.selectAll = false; // Deseleccionar checkbox general
+    this.updatePaginatedTeachers(); // Actualizar datos visibles
+    this.updateSelectedCount(); // Actualizar el conteo de seleccionados
   }
+
 
   // Cambiar el número de filas por página
   changeRowsPerPage(): void {
