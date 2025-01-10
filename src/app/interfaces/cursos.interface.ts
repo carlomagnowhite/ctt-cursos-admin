@@ -9,7 +9,7 @@ export interface Curso {
   id_docente_responsable: string,
   modalidad: string,
   cant_horas: number,
-  precio: number,
+  precio: number[],
   inicio_inscripciones: string,
   fin_inscripciones: string,
   inicio_curso: string,

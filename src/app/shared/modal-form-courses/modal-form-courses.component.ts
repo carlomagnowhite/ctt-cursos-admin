@@ -10,6 +10,7 @@ import {
 import { CoursesService } from '../../services/Courses/courses.service';
 import { Curso } from '../../interfaces/cursos.interface';
 import { TeacherService } from '../../teacher/services/teacher.service';
+import axios from 'axios';
 
 @Component({
   selector: 'app-modal-form-courses',
@@ -19,6 +20,11 @@ import { TeacherService } from '../../teacher/services/teacher.service';
 export class ModalFormCoursesComponent {
   formCurso: FormGroup;
   loading: boolean = false;
+  uploading: boolean = false;
+  imageUrl: string | null = null;
+  selectedImageFile: File | null = null;
+  previewUrl: string | null = null;
+  showInfo: boolean = false;
   @Output() isModalOpenChange: EventEmitter<boolean> = new EventEmitter();
   @Input() courseData: any = null;
   submitted: boolean = false;
@@ -47,7 +53,13 @@ export class ModalFormCoursesComponent {
         id_docente_responsable: ['', [Validators.required]],
         modalidad: ['', [Validators.required]],
         cant_horas: ['', [Validators.required]],
-        precio: ['', [Validators.required]],
+        precio: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(/^\d+(\.\d{1,2})?,\d+(\.\d{1,2})?,\d+(\.\d{1,2})?$/),
+          ],
+        ],
         inicio_inscripciones: [
           '',
           [Validators.required, Validators.pattern(/^\d{4}-\d{2}-\d{2}$/)],
@@ -76,6 +88,47 @@ export class ModalFormCoursesComponent {
     this.getTeachers();
   }
 
+  onImageSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      this.selectedImageFile = file;
+      //GENERAR PREVISUALIZACION
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  //SUBIR IMAGEN A CLOUDINARY
+  async uploadImage(): Promise<string | null>{
+    if(!this.selectedImageFile) return null;
+
+    const formData = new FormData();
+    formData.append('file', this.selectedImageFile);
+    formData.append('upload_preset', 'auto-tag'); // Nombre del preset configurado en Cloudinary
+
+    try {
+      this.uploading = true;
+      const response = await axios.post(
+        'https://api.cloudinary.com/v1_1/dse9fbtcp/image/upload',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      this.uploading = false;
+      return response.data.secure_url; // Devuelve la URL de la imagen
+    } catch (error) {
+      this.uploading = false;
+      console.error('Error al subir la imagen:', error);
+      return null;
+    }
+  }
+
   async getTeachers(){
     try {
       const response = await this.teachersService.getTeachers();
@@ -99,17 +152,17 @@ export class ModalFormCoursesComponent {
       const endDate = group.get(endField)?.value;
 
       if (!startDate || !endDate) {
-        return null; // If either date is empty, don't validate here.
+        return null;
       }
 
       const start = new Date(startDate);
       const end = new Date(endDate);
 
       if (start > end) {
-        return { invalidDateRange: true }; // Return the error if the dates are invalid.
+        return { invalidDateRange: true };
       }
 
-      return null; // Dates are valid.
+      return null;
     };
   }
 
@@ -118,10 +171,15 @@ export class ModalFormCoursesComponent {
     this.submitted = true;
     try {
       if (this.formCurso.valid) {
+        this.loading = true;
+        //Subir la img si hay una seleccionada
+        const imageUrl = await this.uploadImage();
+        if (imageUrl) {
+          this.formCurso.patchValue({ img: imageUrl });
+        }
         if (form.id) {
           this.updateCourse();
         } else {
-          this.loading = true;
           console.log(this.prepareObjectPost());
           const response = await this.cursosService.addCourse(
             this.prepareObjectPost()
@@ -152,8 +210,8 @@ export class ModalFormCoursesComponent {
       horario: this.formCurso.value.horario,
       id_docente_responsable: this.formCurso.value.id_docente_responsable,
       modalidad: this.formCurso.value.modalidad,
-      cant_horas: Number(this.formCurso.value.cant_horas), // Asegúrate de convertir a número
-      precio: Number(this.formCurso.value.precio), // Asegúrate de convertir a número
+      cant_horas: Number(this.formCurso.value.cant_horas),
+      precio: this.parsePrecio(this.formCurso.value.precio),
       inicio_inscripciones: this.formCurso.value.inicio_inscripciones,
       fin_inscripciones: this.formCurso.value.fin_inscripciones,
       inicio_curso: this.formCurso.value.inicio_curso,
@@ -172,8 +230,8 @@ export class ModalFormCoursesComponent {
       horario: this.formCurso.value.horario,
       id_docente_responsable: this.formCurso.value.id_docente_responsable,
       modalidad: this.formCurso.value.modalidad,
-      cant_horas: Number(this.formCurso.value.cant_horas), // Asegúrate de convertir a número
-      precio: Number(this.formCurso.value.precio), // Asegúrate de convertir a número
+      cant_horas: Number(this.formCurso.value.cant_horas),
+      precio: this.parsePrecio(this.formCurso.value.precio),
       inicio_inscripciones: this.formCurso.value.inicio_inscripciones,
       fin_inscripciones: this.formCurso.value.fin_inscripciones,
       inicio_curso: this.formCurso.value.inicio_curso,
@@ -181,6 +239,14 @@ export class ModalFormCoursesComponent {
     };
     return nuevoCurso;
   }
+
+  parsePrecio(precio: string): number[] {
+    return precio
+      .split(',')
+      .map((p) => parseFloat(p.trim()))
+      .filter((p) => !isNaN(p));
+  }
+
 
   async updateCourse() {
     this.submitted = true;

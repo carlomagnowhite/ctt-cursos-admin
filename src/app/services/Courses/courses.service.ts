@@ -32,7 +32,7 @@ export class CoursesService {
 
   async getCourse(): Promise<any> {
     try {
-      const { data, error } = await this.supabase.from('cursos').select('*');
+      const { data, error } = await this.supabase.rpc('get_cursos');;
       if (error) {
         throw new Error(
           'Error al intentar recuperar los cursos. Error: ' + error

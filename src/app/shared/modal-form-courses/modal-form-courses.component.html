@@ -29,10 +29,25 @@
         </div>
 
         <!-- Campo: Banner promocional -->
-        <div>
-          <label for="img" class="block text-sm font-medium text-gray-700">Banner promocional:</label>
-          <input id="img" formControlName="img"
-            class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+        <div class="mb-4">
+          <label for="img" class="block text-sm font-medium text-gray-700">
+            Banner promocional:
+          </label>
+          <input
+            type="file"
+            id="img"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+            class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+          <div *ngIf="previewUrl" class="mt-4">
+            <p class="text-gray-500 mb-2">Vista previa:</p>
+            <img
+              [src]="previewUrl"
+              alt="Previsualización de imagen"
+              class="w-full max-h-64 rounded-md object-cover"
+            />
+          </div>
         </div>
 
         <!-- Campo: Horario -->
@@ -84,14 +99,46 @@
         </div>
 
         <!-- Campo: Precios -->
-        <div>
-          <label for="precio" class="block text-sm font-medium text-gray-700">Precios:</label>
-          <input id="precio" formControlName="precio" type="number" [ngModel]="courseData?.precio"
-            class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-          <div *ngIf="formCurso.controls['precio'].invalid && submitted" class="text-red-500 text-sm">
+        <div class="relative">
+          <label for="precio" class="block text-sm font-medium text-gray-700">
+            Precios:
+            <!-- Icono de información -->
+            <span
+              class="relative inline-block text-blue-500 ml-2 cursor-pointer"
+              (mouseenter)="showInfo = true"
+              (mouseleave)="showInfo = false"
+            >
+              ℹ
+              <div
+                *ngIf="showInfo"
+                class="absolute top-0 left-6 z-10 bg-white text-sm text-gray-700 p-2 border rounded-lg shadow-lg w-56"
+              >
+                <p>Ingrese los precios en el siguiente orden:</p>
+                <ul class="list-disc ml-4">
+                  <li>Estudiantes</li>
+                  <li>Docentes y Administrativos</li>
+                  <li>Público en general</li>
+                </ul>
+                <p class="mt-2 text-gray-500">Separados por comas (,) y sin signo de moneda.</p>
+              </div>
+            </span>
+          </label>
+          <input
+            id="precio"
+            formControlName="precio"
+            type="text"
+            [ngModel]="courseData?.precio"
+            placeholder="Estudiantes - Administrativos - Público"
+            class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+          <div
+            *ngIf="formCurso.controls['precio'].invalid && submitted"
+            class="text-red-500 text-sm"
+          >
             Ingrese una cantidad válida.
           </div>
         </div>
+
         <!-- Campo: Objetivo -->
         <div>
           <label for="objetivo" class="block text-sm font-medium text-gray-700">Objetivo:</label>
