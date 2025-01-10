@@ -6,6 +6,8 @@ import { TableComponent } from './table/table.component';
 import { HomeModule } from '../home/home.module';
 import { ModalFormCoursesComponent } from './modal-form-courses/modal-form-courses.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ModalInfoCoursesComponent } from './modal-info-courses/modal-info-courses.component';
+import { ModalPricesComponent } from './modal-prices/modal-prices.component';
 
 
 
@@ -15,7 +17,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     HeaderComponent,
     SidebarComponent,
     TableComponent,
-    ModalFormCoursesComponent
+    ModalFormCoursesComponent,
+    ModalInfoCoursesComponent,
+    ModalPricesComponent
   ],
   imports: [
     CommonModule,

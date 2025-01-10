@@ -13,11 +13,23 @@ export class TableComponent {
   cursosService: CoursesService = inject(CoursesService);
   isModalOpen: boolean = false;
   isModalUpdateOpen: boolean = false;
+  isModalInfoOpen: boolean = false;
   courseData: any = null;
+  courseInfo: any = null;
   rowsPerPage: number = 3;
   currentPage: number = 1;
   paginatedCourses: any[] = [];
   Math = Math;
+  precios: number[] = [];
+  precio1: number = 0;
+  precio2: number = 0;
+  precio3: number = 0;
+
+  getPrices(){
+    this.precio1 = this.precios[0];
+    this.precio2 = this.precios[1];
+    this.precio3 = this.precios[2];
+  }
 
   constructor(){
     this.getCourses();
@@ -32,10 +44,20 @@ export class TableComponent {
     this.getCourses();
   }
 
+  closeInfoModal(): void {
+    this.isModalInfoOpen = false;
+  }
+
   openUpdateModal(curso: Curso): void{
     console.log('Curso seleccionado:', curso);
     this.courseData = curso;
     this.isModalUpdateOpen = true;
+  }
+
+  openInfoModal(curso: Curso): void{
+    console.log('Info curso seleccionado: ', curso);
+    this.courseInfo = curso;
+    this.isModalInfoOpen = true;
   }
 
   closeUpdateModal(): void{
@@ -48,11 +70,15 @@ export class TableComponent {
     try {
       const response = await this.cursosService.getCourse();
       this.cursos = response;
+      this.precios = this.cursos.map(curso => curso.precio);
+      this.getPrices();
       console.log(this.cursos);
+      console.log(this.precio1, this.precio2, this.precio3);
     } catch (error) {
       throw error;
     }
   }
+
 
   async deleteCourse(id: string){
     try {

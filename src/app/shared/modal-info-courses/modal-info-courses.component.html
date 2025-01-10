@@ -1,0 +1,32 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+  <div class="bg-white rounded-xl shadow-xl w-[800px] max-h-[90vh] overflow-y-auto p-6 flex">
+    <!-- Columna Izquierda: Imagen -->
+    <div class="w-2/3 flex-shrink-0">
+      <a href="{{courseInfo.img}}" data-lightbox="course-image" data-title="{{courseInfo.nombre}}" target="_blank">
+        <img src="{{courseInfo.img}}" alt="Imagen del Curso" class="w-full h-full rounded-l-xl object-cover cursor-pointer">
+      </a>
+    </div>
+    <!-- Columna Derecha: Información -->
+    <div class="w-1/3 p-5 flex flex-col justify-between">
+      <!-- Información del Curso -->
+      <div class="flex-grow">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 break-words">{{courseInfo.nombre}}</h2>
+        <p class="text-base text-gray-600 mb-4 leading-relaxed break-words">{{courseInfo.descripcion}}</p>
+        <div class="text-sm text-gray-500 space-y-2">
+          <p><strong>Precio:</strong> ${{courseInfo.precio}}</p>
+          <p><strong>Modalidad:</strong> {{courseInfo.modalidad}}</p>
+          <p><strong>Ubicación</strong> {{courseInfo.ubicacion}}</p>
+          <p><strong>Cant. Horas:</strong> {{courseInfo.cant_horas}}</p>
+          <p><strong>Inicio inscripciones:</strong> {{courseInfo.inicio_inscripciones}}</p>
+          <p><strong>Fin inscripciones:</strong> {{courseInfo.fin_inscripciones}}</p>
+          <p><strong>Inicio curso:</strong> {{courseInfo.inicio_curso}}</p>
+          <p><strong>Fin curso:</strong> {{courseInfo.fin_curso}}</p>
+        </div>
+      </div>
+      <!-- Botón al final -->
+      <button (click)="closeModal()" class="w-full rounded-md bg-red-600 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-red-700 focus:shadow-none active:bg-red-700 hover:bg-red-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mt-6" type="button">
+        X Cerrar
+      </button>
+    </div>
+  </div>
+</div>
