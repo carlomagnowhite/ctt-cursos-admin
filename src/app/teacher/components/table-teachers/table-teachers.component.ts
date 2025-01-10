@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TeacherService } from '../../services/teacher.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-table-teachers',
@@ -20,6 +21,12 @@ export class TableTeachersComponent {
   rowsPerPage: number = 5; // Filas visibles por página (configurable)
   paginatedTeachers: any[] = []; // Lista de profesores visible en la página actual
   Math = Math;
+  fileData: any[] = []; // Datos procesados del archivo
+  selectedFile: File | null = null;
+  selectedFileName: string | null = null; // Variable para almacenar el nombre del archivo
+  modalMessage: string = '';
+  showMessage:boolean = false;
+  fileName:string = '';
 
   openModal(): void {
     this.showModal = true;
@@ -32,6 +39,121 @@ export class TableTeachersComponent {
 
   ngOnInit(): void{
     this.fetchTeachers();
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      this.selectedFileName = file.name;
+    }
+  }
+
+
+  processFile(): void {
+    if (!this.selectedFile) {
+      this.showModalMessage('Por favor, seleccione un archivo primero.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const data = e.target.result;
+      const workbook = XLSX.read(data, { type: 'binary' });
+
+      const sheetName = workbook.SheetNames[0];
+      const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+      // Normalizar datos
+      const normalizedData = sheetData.map((row: any) => ({
+        nombre: row['nombre']?.trim() || null,
+        apellido: row['apellido']?.trim() || null,
+        correo: row['correo']?.trim() || null,
+        titulo: row['titulo']?.trim() || 'Sin título', // Valor por defecto
+        cargo: row['cargo']?.trim() || null,
+      }));
+
+      // Validar contenido
+      if (!this.validateFile(normalizedData)) {
+        return;
+      }
+
+      // Contar filas totales excluyendo headers y pasar al siguiente método
+      const totalRows = sheetData.length;
+      this.insertData(normalizedData, totalRows);
+    };
+
+    reader.readAsBinaryString(this.selectedFile);
+    this.resetFileInput();
+  }
+
+  insertData(data: any[], totalRows: number): void {
+    this.teacherService.addTeachers(data)
+      .then((result: any) => {
+        const insertedRows = result?.length || 0; // Asegúrate de que el servicio retorna las filas insertadas
+        this.fetchTeachers(); // Recargar la tabla
+        this.showModalMessage(
+          `Archivo procesado: ${totalRows} filas detectadas.\n`
+        );
+        this.resetFileInput(); // Limpiar el estado del archivo y su etiqueta
+      })
+      .catch((error) => {
+        console.error('Error al insertar datos:', error.message);
+        this.showModalMessage('Error al insertar datos: ' + error.message);
+      });
+  }
+
+
+  resetFileInput(): void {
+    this.selectedFile = null; // Resetea el archivo seleccionado
+    this.selectedFileName = ''; // Limpia el nombre del archivo mostrado
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = ''; // Resetea el valor del input de archivo
+    }
+  }
+
+
+  validateFile(data: any[]): boolean {
+    if (data.length === 0) {
+      this.showModalMessage('El archivo está vacío. Por favor, seleccione un archivo con datos.');
+      return false;
+    }
+
+    const requiredColumns = ['nombre', 'apellido', 'correo', 'titulo', 'cargo'];
+    const firstRow = data[0];
+    for (const col of requiredColumns) {
+      if (!(col in firstRow)) {
+        this.showModalMessage(`El archivo debe incluir la columna "${col}".`);
+        return false;
+      }
+    }
+
+    // Validar contenido de cada fila
+    const invalidRows = data.filter(row => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Expresión regular para validar correos
+      const nameRegex = /^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/; // Expresión regular para validar nombres
+
+      return (
+        !row.nombre || !nameRegex.test(row.nombre) || // Valida nombre
+        !row.apellido || !nameRegex.test(row.apellido) || // Valida apellido
+        !row.correo || !emailRegex.test(row.correo) || // Valida correo
+        !row.titulo || // Valida que título no esté vacío
+        !row.cargo // Valida que cargo no esté vacío
+      );
+    });
+
+    if (invalidRows.length > 0) {
+      this.showModalMessage('El archivo contiene filas con datos inválidos o incompletos.');
+      return false;
+    }
+
+    return true;
+  }
+
+  showModalMessage(message: string): void {
+    this.modalMessage = message;
+    this.showMessage = true;
   }
 
   openAddModal(): Promise<void> {

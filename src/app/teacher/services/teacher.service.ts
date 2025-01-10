@@ -65,6 +65,15 @@ export class TeacherService {
     }
   }
 
+  async addTeachers(teachers: any[]): Promise<any[]> {
+    const { data, error } = await this.supabase.from('docentes').insert(teachers);
+    if (error) {
+      console.error('Error al agregar los docentes:', error.message);
+      throw new Error('Error al insertar docentes');
+    }
+    return data ?? []; // Retorna los datos insertados o un array vacío si data es null
+  }
+
   async updateTeacher(id: number, updates: any): Promise<void> {
     const { error } = await this.supabase.from('docentes').update(updates).eq('id', id);
     if (error) {

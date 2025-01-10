@@ -26,6 +26,7 @@
     "express": "^4.21.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
@@ -33,6 +34,7 @@
     "@angular/cli": "^17.3.2",
     "@angular/compiler-cli": "^17.3.0",
     "@types/jasmine": "~5.1.0",
+    "@types/xlsx": "^0.0.36",
     "autoprefixer": "^10.4.20",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",

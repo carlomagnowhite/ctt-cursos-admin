@@ -13,6 +13,32 @@
         <i class="material-icons">search</i>
       </span>
     </div>
+
+    <div class="flex items-center space-x-4">
+      <!-- Botón "Seleccionar Archivo" -->
+      <div>
+        <label class="flex items-center cursor-pointer bg-gray-200 rounded-lg p-2 hover:bg-gray-300">
+          <i class="material-icons mr-2">file_upload</i>
+          <span>Seleccionar Archivo</span>
+          <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="hidden" (change)="onFileSelected($event)" />
+        </label>
+        <!-- Mostrar el nombre del archivo seleccionado -->
+        <p class="mt-2 text-sm text-gray-500 truncate max-w-xs" *ngIf="selectedFileName" title="{{ selectedFileName }}">
+          Archivo seleccionado: {{ selectedFileName }}
+        </p>
+      </div>
+
+      <!-- Botón "Ingresar" -->
+      <button
+        class="flex items-center bg-blue-600 text-white rounded-lg p-2 hover:bg-blue-700"
+        (click)="processFile()"
+      >
+        <i class="material-icons mr-2">login</i>
+        <span>Ingresar</span>
+      </button>
+    </div>
+
+
     <div class="flex justify-end space-x-2">
       <button (click)="openModal()" class="p-2 bg-gray-200 rounded-lg hover:bg-gray-300">
         <i class="material-icons">add</i>
@@ -22,6 +48,7 @@
       </button>
     </div>
   </div>
+
 
   <!-- Tabla -->
   <div class="overflow-auto max-h-96">
@@ -115,6 +142,25 @@
         class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
       >
         Eliminar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Advertencia -->
+<div
+  *ngIf="showMessage"
+  class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50"
+>
+  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+    <h2 class="text-lg font-semibold text-gray-700">Advertencia</h2>
+    <p class="mt-4 text-gray-600">{{ modalMessage }}</p>
+    <div class="mt-6 flex justify-end">
+      <button
+        class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring focus:ring-blue-300"
+        (click)="showMessage = false"
+      >
+        Aceptar
       </button>
     </div>
   </div>
